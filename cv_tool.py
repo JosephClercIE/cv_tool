@@ -1,7 +1,7 @@
 import streamlit as st
 from collections import Counter
 from PyPDF2 import PdfReader
-import requests
+from transformers import pipeline
 
 # Function to extract text from a PDF file
 def extract_text_from_pdf(uploaded_file):
@@ -26,25 +26,6 @@ def calculate_match_score(cv_keywords, job_keywords):
     matched_keywords = cv_keywords_set.intersection(job_keywords_set)
     match_score = (len(matched_keywords) / len(job_keywords_set)) * 100 if job_keywords_set else 0
     return match_score, matched_keywords
-
-# Function to generate a cover letter using Hugging Face Inference API
-def generate_cover_letter(cv, job_desc):
-    """Generate a cover letter using Hugging Face Inference API."""
-    API_URL = "https://api-inference.huggingface.co/models/EleutherAI/gpt-neo-1.3B"
-    # Load the token from Streamlit secrets
-    token = st.secrets["HF_API_TOKEN"]
-    headers = {"Authorization": f"Bearer {token}"}
-
-    payload = {
-        "inputs": f"Generate a professional cover letter based on this CV: {cv} and this job description: {job_desc}",
-        "parameters": {"max_length": 300},
-    }
-    response = requests.post(API_URL, headers=headers, json=payload)
-
-    if response.status_code == 200:
-        return response.json()[0]["generated_text"]
-    else:
-        return f"Error: Unable to generate cover letter. Status code: {response.status_code}"
 
 # Streamlit Interface
 st.title("CV ATS Scorer with Cover Letter Generator")
@@ -100,13 +81,17 @@ st.header("Step 2: Generate a Cover Letter")
 
 if st.button("Generate Cover Letter"):
     if job_description.strip() and candidate_cv:
+        # Load a text generation pipeline
+        generator = pipeline("text-generation", model="distilgpt2")
+        # Generate a cover letter
+        cover_letter = generator(
+            f"Generate a professional cover letter based on this CV: {candidate_cv} and this job description: {job_description}",
+            max_length=300,
+            num_return_sequences=1
+        )[0]["generated_text"]
+
         st.subheader("Generated Cover Letter")
-        
-        # Generate cover letter
-        cover_letter = generate_cover_letter(candidate_cv, job_description)
         st.text_area("Generated Cover Letter", cover_letter, height=300)
     else:
         st.error("Please provide both a job description and a CV to generate a cover letter.")
-
-
 
