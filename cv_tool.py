@@ -28,7 +28,7 @@ def calculate_match_score(cv_keywords, job_keywords):
     return match_score, matched_keywords
 
 # Streamlit Interface
-st.title("CV ATS Scorer with Cover Letter Generator")
+st.title("CV Tool : ATS Scorer with Cover Letter Generator")
 
 st.header("Step 1: Upload Job Description and CV")
 job_description = st.text_area("Paste the job description here:")
