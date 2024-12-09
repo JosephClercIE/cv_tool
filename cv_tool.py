@@ -1,5 +1,3 @@
-import os
-import spacy
 import streamlit as st
 from collections import Counter
 
@@ -42,5 +40,6 @@ if st.button("Analyze"):
         st.write(f"**Matched Keywords:** {', '.join(matched_keywords)}")
     else:
         st.error("Please enter both the job description and CV.")
+
 
 
