@@ -27,16 +27,27 @@ def calculate_match_score(cv_keywords, job_keywords):
     return match_score, matched_keywords
 
 # Streamlit Interface
-st.title("PDF CV ATS Scorer")
+st.title("CV ATS Scorer (Text or PDF)")
 
 st.header("Upload Job Description and CV")
 job_description = st.text_area("Paste the job description here:")
-uploaded_file = st.file_uploader("Upload your CV as a PDF", type=["pdf"])
+
+# CV input options
+cv_input_type = st.radio(
+    "How would you like to input your CV?",
+    ("Paste CV as text", "Upload CV as a PDF")
+)
+
+if cv_input_type == "Paste CV as text":
+    candidate_cv = st.text_area("Paste your CV here:")
+elif cv_input_type == "Upload CV as a PDF":
+    uploaded_file = st.file_uploader("Upload your CV as a PDF", type=["pdf"])
+    candidate_cv = None
+    if uploaded_file:
+        candidate_cv = extract_text_from_pdf(uploaded_file)
 
 if st.button("Analyze"):
-    if job_description.strip() and uploaded_file:
-        # Extract text from the uploaded PDF
-        candidate_cv = extract_text_from_pdf(uploaded_file)
+    if job_description.strip() and candidate_cv:
         st.text_area("Extracted CV Text (Preview)", candidate_cv, height=200)
 
         # Extract keywords
@@ -62,7 +73,8 @@ if st.button("Analyze"):
         else:
             st.error("Your CV is not well-optimized. Improve the alignment with job description keywords.")
     else:
-        st.error("Please enter the job description and upload a CV.")
+        st.error("Please enter the job description and upload or paste a CV.")
+
 
 
 
