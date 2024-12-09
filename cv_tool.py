@@ -32,13 +32,12 @@ def calculate_match_score(cv_keywords, job_keywords):
 def generate_cover_letter(cv, job_desc):
     """Generate a cover letter using Hugging Face transformers."""
     try:
-        device = 0 if torch.cuda.is_available() else -1  # Use GPU if available
-        generator = pipeline("text-generation", model="distilgpt2", device=device)
+        generator = pipeline("text-generation", model="distilgpt2")
 
         # Generate text with adjusted max tokens
         result = generator(
             f"Generate a professional cover letter based on this CV: {cv} and this job description: {job_desc}",
-            max_new_tokens=150,
+            max_new_tokens=200,
             num_return_sequences=1
         )
         return result[0]["generated_text"]
@@ -106,3 +105,4 @@ if st.button("Generate Cover Letter"):
         st.text_area("Generated Cover Letter", cover_letter, height=300)
     else:
         st.error("Please provide both a job description and a CV to generate a cover letter.")
+

@@ -1,4 +1,4 @@
 streamlit==1.40.2
 transformers==4.35.0
-torch==2.0.1+cpu; platform_system!="Darwin"
-
+torch==2.0.1+cpu
+PyPDF2==3.0.0
