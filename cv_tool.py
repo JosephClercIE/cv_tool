@@ -1,24 +1,15 @@
 import os
 import spacy
-import re
-from collections import Counter
 import streamlit as st
+from collections import Counter
 
-# Ensure the SpaCy model is downloaded at runtime (if not already installed)
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    os.system("python -m spacy download en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
-
-# Function to extract keywords
+# Keyword extraction function (simplified)
 def extract_keywords(text):
-    """Extract keywords from text using SpaCy."""
-    doc = nlp(text)
-    keywords = [token.text for token in doc if token.is_alpha and token.pos_ in {"NOUN", "PROPN", "ADJ"}]
-    return Counter(keywords).most_common()
+    """Extract keywords by splitting on spaces."""
+    words = text.split()
+    return Counter(words).most_common()
 
-# Function to calculate match score
+# Match score calculation
 def calculate_match_score(cv_keywords, job_keywords):
     """Calculate match score based on keyword overlap."""
     cv_keywords_set = set(cv_keywords)
@@ -28,7 +19,7 @@ def calculate_match_score(cv_keywords, job_keywords):
     return match_score, matched_keywords
 
 # Streamlit Interface
-st.title("ATS-Optimized CV Tool")
+st.title("ATS-Optimized CV Tool (Minimal Version)")
 
 st.header("Upload Job Description and CV")
 job_description = st.text_area("Paste the job description here:")
@@ -51,4 +42,5 @@ if st.button("Analyze"):
         st.write(f"**Matched Keywords:** {', '.join(matched_keywords)}")
     else:
         st.error("Please enter both the job description and CV.")
+
 
